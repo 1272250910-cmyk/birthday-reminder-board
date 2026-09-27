@@ -96,6 +96,11 @@ def add_birthday():
     except ValueError:
         return "Error: Date is not a valid calendar date.", 400
 
+    for item in birthdays:
+        if (item["name"].strip() == stripped_name and
+                item["date"] == stripped_date):
+            return "Error: Birthday already exists.", 400
+
     birthdays.append({"name": stripped_name, "date": stripped_date})
     return redirect(url_for("index"))
 

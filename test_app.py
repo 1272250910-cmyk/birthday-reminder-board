@@ -63,6 +63,29 @@ def test_add_birthday_success(client):
     assert "Alice" in home_resp.get_data(as_text=True)
 
 
+def test_add_duplicate_birthday_rejected(client):
+    """Adding the same birthday twice returns 400 and rejects duplicate."""
+    first_resp = client.post(
+        "/add",
+        data={"name": "Alice", "date": "1995-10-25"},
+        follow_redirects=False,
+    )
+    assert first_resp.status_code == 302
+    assert len(birthdays) == 1
+
+    # Second addition with same name (even with whitespace) and date
+    second_resp = client.post(
+        "/add",
+        data={"name": "  Alice  ", "date": "1995-10-25"},
+        follow_redirects=False,
+    )
+    assert second_resp.status_code == 400
+    assert "Error: Birthday already exists." in second_resp.get_data(
+        as_text=True
+    )
+    assert len(birthdays) == 1
+
+
 @pytest.mark.parametrize(
     "invalid_data,expected_error",
     [
