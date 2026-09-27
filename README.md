@@ -79,6 +79,59 @@ birthday-reminder-board/
 
 ---
 
+## 🔌 API Endpoints
+
+The Birthday Reminder Board provides the following API endpoints:
+
+### 1. `GET /api/birthdays`
+Returns all registered birthdays as a JSON list.
+- **Status**: `200 OK`
+- **Example command**:
+  ```bash
+  curl http://localhost:5000/api/birthdays
+  ```
+- **Example response**:
+  ```json
+  [
+    {"name": "Alice Smith", "date": "1995-10-25"},
+    {"name": "Bob Jones", "date": "1992-05-15"}
+  ]
+  ```
+
+### 2. `GET /api/birthdays/<name>`
+Returns a single matching birthday as JSON. Name matching is case-insensitive and trims leading/trailing whitespace.
+- **Success (`200 OK`)**:
+  ```bash
+  curl http://localhost:5000/api/birthdays/Alice%20Smith
+  ```
+  Returns:
+  ```json
+  {"name": "Alice Smith", "date": "1995-10-25"}
+  ```
+- **Not Found (`404 Not Found`)**:
+  When no matching birthday exists, it returns HTTP `404` with `{"error": "Birthday not found"}`:
+  ```bash
+  curl -i http://localhost:5000/api/birthdays/Nonexistent
+  ```
+  Returns:
+  ```json
+  {"error": "Birthday not found"}
+  ```
+
+### 3. `GET /health`
+Returns the application health status and the 7-character commit ID (from `RENDER_GIT_COMMIT` or defaulting to `local`).
+- **Status**: `200 OK`
+- **Example command**:
+  ```bash
+  curl http://localhost:5000/health
+  ```
+- **Example response**:
+  ```json
+  {"status": "ok", "commit": "local"}
+  ```
+
+---
+
 ## 🚀 Running Locally
 
 ### 1. Prerequisites
