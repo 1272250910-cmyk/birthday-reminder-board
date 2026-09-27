@@ -110,6 +110,15 @@ def api_birthdays():
     return jsonify(birthdays)
 
 
+@app.route("/api/birthdays/<name>", methods=["GET"])
+def get_birthday_by_name(name):
+    clean_search = name.strip().lower()
+    for item in birthdays:
+        if item["name"].strip().lower() == clean_search:
+            return jsonify(item), 200
+    return jsonify({"error": "Birthday not found"}), 404
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "commit": get_short_commit_id()})

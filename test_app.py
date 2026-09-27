@@ -211,6 +211,42 @@ def test_api_birthdays(client):
     assert data[1] == {"name": "Bob", "date": "1992-05-15"}
 
 
+def test_get_birthday_by_name_success(client):
+    """GET /api/birthdays/<name> returns matching birthday with 200."""
+    birthdays.append({"name": "Alice Smith", "date": "1995-10-25"})
+
+    # Exact match
+    resp = client.get("/api/birthdays/Alice Smith")
+    assert resp.status_code == 200
+    assert resp.get_json() == {"name": "Alice Smith", "date": "1995-10-25"}
+
+    # Case-insensitive match
+    resp_lower = client.get("/api/birthdays/alice smith")
+    assert resp_lower.status_code == 200
+    assert resp_lower.get_json() == {
+        "name": "Alice Smith",
+        "date": "1995-10-25"
+    }
+
+    # Leading / trailing whitespace match
+    resp_ws = client.get("/api/birthdays/%20alice%20smith%20")
+    assert resp_ws.status_code == 200
+    assert resp_ws.get_json() == {
+        "name": "Alice Smith",
+        "date": "1995-10-25"
+    }
+
+
+def test_get_birthday_by_name_not_found(client):
+    """GET /api/birthdays/<name> returns 404 when name is not found."""
+    birthdays.append({"name": "Alice Smith", "date": "1995-10-25"})
+
+    resp = client.get("/api/birthdays/Unknown Person")
+    assert resp.status_code == 404
+    assert resp.is_json
+    assert resp.get_json() == {"error": "Birthday not found"}
+
+
 def test_health_endpoint_default(client):
     """GET /health returns status ok and default 'local' commit."""
     response = client.get("/health")
