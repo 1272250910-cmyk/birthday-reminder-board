@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Reminder Board</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --highlight-bg: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(99, 102, 241, 0.15));
+            --highlight-border: #ec4899;
+            --highlight-badge: #ec4899;
+            --badge-bg: #3730a3;
+            --badge-text: #e0e7ff;
+            --danger-bg: #7f1d1d;
+            --danger-text: #fecaca;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #ec4899, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        @media (max-width: 640px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        input[type="text"],
+        input[type="date"] {
+            background-color: #0f172a;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 0.65rem 0.85rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        button[type="submit"] {
+            background-color: var(--accent-primary);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        /* "This Month" Section - Highlighted background */
+        .section-this-month {
+            background: var(--highlight-bg);
+            border: 2px solid var(--highlight-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-month {
+            background-color: var(--highlight-badge);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 9999px;
+            letter-spacing: 0.05em;
+        }
+
+        .birthday-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .birthday-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(15, 23, 42, 0.65);
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background-color 0.2s;
+        }
+
+        .birthday-item:hover {
+            background-color: rgba(15, 23, 42, 0.9);
+        }
+
+        .person-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .person-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .person-date {
+            font-size: 0.825rem;
+            color: var(--text-secondary);
+        }
+
+        .days-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            background-color: var(--badge-bg);
+            color: var(--badge-text);
+            white-space: nowrap;
+        }
+
+        .days-badge.today {
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 1.5rem 0 0.5rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--card-border);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .commit-tag {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background-color: var(--card-bg);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--card-border);
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Birthday Reminder Board</h1>
+            <p>Track celebrations and never miss an upcoming birthday</p>
+        </header>
+
+        <!-- Add Birthday Form -->
+        <section class="card form-card">
+            <h2>➕ Add a Birthday</h2>
+            <form action="/add" method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Full Name" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="date">Birthday</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <button type="submit">Add Birthday</button>
+            </form>
+        </section>
+
+        <!-- "This Month" Section (Visually distinguished with highlighted background) -->
+        <section class="card section-this-month" id="this-month-section">
+            <div class="section-header">
+                <h2>🎉 This Month</h2>
+                <span class="badge-month">{{ current_month_name }}</span>
+            </div>
+
+            {% if this_month_birthdays %}
+                <ul class="birthday-list">
+                    {% for person in this_month_birthdays %}
+                        <li class="birthday-item">
+                            <div class="person-info">
+                                <span class="person-name">{{ person.name }}</span>
+                                <span class="person-date">{{ person.date }}</span>
+                            </div>
+                            <span class="days-badge {% if person.days_until == 0 %}today{% endif %}">
+                                {% if person.days_until == 0 %}
+                                    Today! 🎂
+                                {% elif person.days_until == 1 %}
+                                    1 day away
+                                {% else %}
+                                    {{ person.days_until }} days away
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty-state">
+                    No birthdays in {{ current_month_name }}.
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- "All Birthdays" Section (Sorted by soonest upcoming birthday) -->
+        <section class="card section-all-birthdays" id="all-birthdays-section">
+            <div class="section-header">
+                <h2>📅 All Birthdays</h2>
+                <span style="font-size: 0.85rem; color: var(--text-secondary);">Sorted by soonest upcoming</span>
+            </div>
+
+            {% if all_birthdays %}
+                <ul class="birthday-list">
+                    {% for person in all_birthdays %}
+                        <li class="birthday-item">
+                            <div class="person-info">
+                                <span class="person-name">{{ person.name }}</span>
+                                <span class="person-date">{{ person.date }}</span>
+                            </div>
+                            <span class="days-badge {% if person.days_until == 0 %}today{% endif %}">
+                                {% if person.days_until == 0 %}
+                                    0 days (Today!)
+                                {% elif person.days_until == 1 %}
+                                    1 day until next birthday
+                                {% else %}
+                                    {{ person.days_until }} days until next birthday
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty-state">
+                    No birthdays added yet. Fill out the form above to add one!
+                </div>
+            {% endif %}
+        </section>
+
+        <!-- Footer showing running commit ID -->
+        <footer>
+            <span>Commit: <span id="commit-id" class="commit-tag">{{ commit_id }}</span></span>
+        </footer>
+    </div>
+</body>
+</html>
