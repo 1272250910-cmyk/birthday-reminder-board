@@ -41,7 +41,6 @@ def test_footer_commit_id_truncated(client, monkeypatch):
     response = client.get("/")
     assert response.status_code == 200
 
-
     html = response.get_data(as_text=True)
     assert "abcdef1" in html
     assert "abcdef1234567890" not in html
