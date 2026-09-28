@@ -39,7 +39,8 @@ def test_footer_commit_id_truncated(client, monkeypatch):
     """Footer should display RENDER_GIT_COMMIT truncated to 7 chars."""
     monkeypatch.setenv("RENDER_GIT_COMMIT", "abcdef1234567890")
     response = client.get("/")
-    assert response.status_code == 500
+    assert response.status_code == 200
+
 
     html = response.get_data(as_text=True)
     assert "abcdef1" in html
